@@ -120,7 +120,7 @@ J’ai ajouté trois labels :
 
 Télécharger le fichier backup-container.sh sur le serveur svdocker dans le dossier « home » de l’utilisateur backuppc. Sur le serveur svbackup connectez-vous à l’interface de BackupPC pour créer une machine nommé « docker-glpi_www ». Ce nom vous permettra de retrouver rapidement votre sauvegarde dans la liste des machines enregistré. Il y a une subtilité car ce même nom est utilisé par BackupPC pour contrôler si la machine est accessible sur le réseau. Il va falloir contourner le problème en modifiant les champs ClientNameAlias, PingCmd en remplaçant la variable « $host » par le nom DNS de votre serveur Docker, ici : svdocker
 
-<img alt="" src="https://philippe-maladjian.fr/data/medias/Informatiques/backuppc/dockerToBackuppc/docker_backuppc_01.jpg" />
+![(https://philippe-maladjian.fr/data/medias/Informatiques/backuppc/dockerToBackuppc/docker_backuppc_01.jpg")]
 
 Pour lancer la copie des fichiers du container vers l’hôte j’utilise la fonction « DumpPreUserCmd », pour faire simple cela permet de lancer un programme sur l’hôte avant que BackupPC rapatrie les fichiers. Ici nous allons lancer le script backup-container.sh.
 
