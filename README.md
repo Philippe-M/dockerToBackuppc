@@ -2,7 +2,7 @@ Dans un environnement de production il est important de réaliser des sauvegarde
 
 Je part du principe que vous maîtrisez BackupPC, Docker, Docker-compose, Glpi et Traefik. Chaque brique est opérationnel et je détaillerais uniquement ce qui est en lien avec le script.
 
-## Pourquoi le contenue ?g
+## Pourquoi le contenue ?
 
 Nos container mènes leurs petites vies, dans notre exemple Glpi est utilisé pour maintenir l’inventaire du parc informatique (matériel et financier) avec le plugin Fusion Inventory et aussi pour gérer les tickets du support. Vous vous imaginez bien que toutes ces données change en permanence et qu’il est important de pouvoir les restaurer en cas de crash.
 
@@ -17,17 +17,18 @@ Pour notre exemple nous utiliserons deux serveurs :
 
 La communication entre ces serveurs ce fera par ssh avec échange de clés pour ne plus avoir besoin de saisir les mots de passe.
 
-## Au début il y avait docker-composeg
+## Au début il y avait docker-compose
 
 Pour construire mes container j’utilise docker-compose. Dans BackupPC je créé un job qui sera chargé de copier uniquement les fichiers de configurations et créations de mes containers. Sur svdocker nous les stockerons dans le dossier /home de l’utilisateur backuppc.
 
-## Naquirent les containersg
+## Naquirent les containers
 
 Pour Glpi j’utilise deux containers, un premier pour la partie web et un autre pour la partie mysql.
 
 docker-compose.yml
 
-```version: '3.3'
+```
+version: '3.3'
 services:
   glpi_mysql:
     image: mysql:latest
@@ -61,7 +62,8 @@ services:
 
 networks:
   traefik:
-    external: true```
+    external: true
+```
 
 Pour le container glpi_www j’utilise un Dockerfile qui se charge de télécharger l’image php:apache-7.3 et installer les dépendances nécessaires pour faire tourner Glpi. En l’état rien de bien exceptionnel. Vous pouvez voir que j’utilise Traefik pour accéder simplement au container glpi_www. En l’état tout devrait marcher.
 
@@ -69,7 +71,8 @@ Pour permettre à BackupPC de récupérer les informations nécessaire à la sau
 
 docker-compose.yml
 
-```version: '3.3'
+```
+version: '3.3'
 services:
   glpi_mysql:
     image: mysql:latest
@@ -106,7 +109,8 @@ services:
 
 networks:
   traefik:
-    external: true```
+    external: true
+```
 
 J’ai ajouté trois labels :
 
@@ -124,7 +128,7 @@ Pour lancer la copie des fichiers du container vers l’hôte j’utilise la fon
 
 La commande :
 
-```$sshPath -x -l backuppc -i /home/backuppc/.ssh/id_rsa svdocker sudo /home/backuppc/./backup-container.sh -d glpi_www```
+`$sshPath -x -l backuppc -i /home/backuppc/.ssh/id_rsa svdocker sudo /home/backuppc/./backup-container.sh -d glpi_www`
 
 Explication :
 
@@ -140,7 +144,7 @@ Il reste une dernière étape avant de lancer notre première sauvegarde. Le scr
 
 Avec la commande
 
-```$sshPath -x -l backuppc -i /home/backuppc/.ssh/id_rsa svdocker sudo /home/backuppc/./backup-container.sh -d glpi_www -r```
+`$sshPath -x -l backuppc -i /home/backuppc/.ssh/id_rsa svdocker sudo /home/backuppc/./backup-container.sh -d glpi_www -r`
 
 Le fonctionnement est le même que pour la commande de « predump ». A la différence que je passe le paramètre « -r » au script backup-container.sh pour effacer le contenu du dossier « /export/glpi_www ».
 
@@ -150,7 +154,8 @@ Vous pouvez enregistrer le jobs et faire vos premiers essais. Si tout ce passe b
 
 Avec Mysql l’idée est la même. Nous allons éditer le fichier docker-compose.yml de notre ensemble pour ajouter les labels nécessaire à mysql.
 
-```version: '3.3'
+```
+version: '3.3'
 services:
   glpi_mysql:
     image: mysql:latest
@@ -172,12 +177,13 @@ services:
       - traefik
     restart: always
 
-[…]```
+[…]
+```
 
 Cette fois backuppc.services contient « mysql » comme valeur mais ce n’est pas plus important et délicat. Pour que cela marche correctement vous devez activer la connexion par TCP à Traefik de façon à pouvoir depuis l’hôte lancer mysqldump. Il aurait été possible de lancer mysqldump à l’intérieur du container mais cela imposait d'installer dans tout les container « mysqldump » avec toutes les dépendances.
 Sur le serveur svbackup créer un job docker-glpi_mysql en reprenant les mêmes valeur que pour le précédent job à la différence des paramètres à passer au script backup_container :
 
-```$sshPath -x -l backuppc -i /home/backuppc/.ssh/id_rsa svdocker sudo /home/backuppc/./backup-container.sh -d glpi_mysql -u dbuser -p dbpassword -h glpi_mysql.mondomaine.fr -n glpi_prod -c```
+`$sshPath -x -l backuppc -i /home/backuppc/.ssh/id_rsa svdocker sudo /home/backuppc/./backup-container.sh -d glpi_mysql -u dbuser -p dbpassword -h glpi_mysql.mondomaine.fr -n glpi_prod -c`
 
 - $sshPath -x -l backuppc -i /home/backuppc/.ssh/id_rsa svdocker : connexion à svdocker;</li>
 - sudo /home/backuppc/./backup-container.sh -d glpi_mysql -u dbuser -p dbpassword -h glpi_mysql.mondomaine.fr -n glpi_prod -c : lance le script;
@@ -190,11 +196,12 @@ Sur le serveur svbackup créer un job docker-glpi_mysql en reprenant les mêmes 
 
 Il ne vous reste plus qu’à faire un test de sauvegarde.
 
-## Tout en ung
+## Tout en un
 
 Si votre container est à la fois le serveur web et le serveur mysql il va falloir modifier votre docker-compose.yml
 
-```version: '3.3' services:
+```
+version: '3.3' services:
   glpi:
     image: mysql:latest
     container_name: glpi
@@ -215,9 +222,10 @@ Si votre container est à la fois le serveur web et le serveur mysql il va fallo
       - "backuppc.volume.path=/var/www/html"
     networks:
       - traefik
-    restart: always```
+    restart: always
+```
 
 La commande de PreDump reste la même, il faut juste adapté le nom du container :
 
-```$sshPath -x -l backuppc -i /home/backuppc/.ssh/id_rsa svdocker sudo /home/backuppc/./backup-container.sh -d glpi -u dbuser -p dbpassword -c -n glpi_prod```
+`$sshPath -x -l backuppc -i /home/backuppc/.ssh/id_rsa svdocker sudo /home/backuppc/./backup-container.sh -d glpi -u dbuser -p dbpassword -c -n glpi_prod`
 
