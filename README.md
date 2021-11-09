@@ -82,7 +82,7 @@ services:
     env_file:
       - ./mysql.env
     volumes:
-      - "/sql/glpi/prod:/var/lib/mysql"
+      - "/var/lib/mysql/glpi:/var/lib/mysql"
     networks:
       - traefik
     restart: always
@@ -94,7 +94,7 @@ services:
     build: .
     container_name: glpi_www
     volumes:
-      - "/www/prod/glpi/html:/var/www/html"
+      - "/var/www/html:/var/www/html"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.glpi_www.rule=Host(`glpi.mondomaine.fr`)"
@@ -210,7 +210,7 @@ version: '3.3' services:
     env_file:
       - ./mysql.env
     volumes:
-      - "/sql/glpi/prod:/var/lib/mysql"
+      - "/var/lib/mysql/glpi:/var/lib/mysql"
       - "/var/www/html:/var/www/html"
     labels:
       - "traefik.enable=true"
