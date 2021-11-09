@@ -120,11 +120,11 @@ J’ai ajouté trois labels :
 
 Télécharger le fichier backup-container.sh sur le serveur svdocker dans le dossier « home » de l’utilisateur backuppc. Sur le serveur svbackup connectez-vous à l’interface de BackupPC pour créer une machine nommé « docker-glpi_www ». Ce nom vous permettra de retrouver rapidement votre sauvegarde dans la liste des machines enregistré. Il y a une subtilité car ce même nom est utilisé par BackupPC pour contrôler si la machine est accessible sur le réseau. Il va falloir contourner le problème en modifiant les champs ClientNameAlias, PingCmd en remplaçant la variable « $host » par le nom DNS de votre serveur Docker, ici : svdocker
 
-<img alt="" src="/data/medias/Informatiques/backuppc/dockerToBackuppc/docker_backuppc_01.jpg" />
+<img alt="" src="https://philippe-maladjian.fr/data/medias/Informatiques/backuppc/dockerToBackuppc/docker_backuppc_01.jpg" />
 
 Pour lancer la copie des fichiers du container vers l’hôte j’utilise la fonction « DumpPreUserCmd », pour faire simple cela permet de lancer un programme sur l’hôte avant que BackupPC rapatrie les fichiers. Ici nous allons lancer le script backup-container.sh.
 
-<img alt="" src="/data/medias/Informatiques/backuppc/dockerToBackuppc/docker_backuppc_02.jpg" />
+<img alt="" src="https://philippe-maladjian.fr/data/medias/Informatiques/backuppc/dockerToBackuppc/docker_backuppc_02.jpg" />
 
 La commande :
 
@@ -136,11 +136,11 @@ Explication :
 - sudo /home/backuppc/./backup-container.sh -d glpi_www : lance le script backup-container.sh avec en paramètre le nom du container à sauvegarder. Par défaut les fichiers du container sont copiés dans le dossier /export/glpi_www de l’hôte donc il faut penser à indiquer à BackupPC où aller chercher les fichiers.</li>
 
 
-<img alt="" src="/data/medias/Informatiques/backuppc/dockerToBackuppc/docker_backuppc_03.jpg" />
+<img alt="" src="https://philippe-maladjian.fr/data/medias/Informatiques/backuppc/dockerToBackuppc/docker_backuppc_03.jpg" />
 
 Il reste une dernière étape avant de lancer notre première sauvegarde. Le script copie les fichiers du container vers l’hôte dans le dossier /export/glpi_www, il est donc nécessaire de purger ce dossier après chaque sauvegarde. J’utilise cette fois l’option « DumpPostUserCmd »
 
-<img alt="" src="/data/medias/Informatiques/backuppc/dockerToBackuppc/docker_backuppc_04.jpg" />
+<img alt="" src="https://philippe-maladjian.fr/data/medias/Informatiques/backuppc/dockerToBackuppc/docker_backuppc_04.jpg" />
 
 Avec la commande
 
